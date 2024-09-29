@@ -43,7 +43,7 @@ public class pruebaDeIntegracionNumeroUno{
         Assertions.assertTrue(resultado.getStatusCode().is2xxSuccessful());
 
         ResponseEntity<EmpleadoORM> resultadoId = testRestTemplate.getForEntity("/empleados/0", EmpleadoORM.class);
-        Assertions.assertNotEquals(null, resultadoId.getBody().getId());
+        Assertions.assertNotEquals(null, Objects.requireNonNull(resultadoId.getBody()).getId());
         Assertions.assertTrue(resultadoId.getStatusCode().is2xxSuccessful());
 
         /* TODO
@@ -63,9 +63,9 @@ public class pruebaDeIntegracionNumeroUno{
             empleadoORM2.setHistorialLaboral(new ArrayList<>());
 
         testRestTemplate.put("/empleados/1", empleadoORM2);
-        EmpleadoORM respuestaUpdateInjection = testRestTemplate.getForEntity("/empleados/1", EmpleadoORM.class).getBody();
-        Assertions.assertEquals(empleadoORM2.getNombre(), Objects.requireNonNull(respuestaUpdateInjection).getNombre());
-
+        ResponseEntity<EmpleadoORM> respuestaUpdateInjection = testRestTemplate.getForEntity("/empleados/1", EmpleadoORM.class);
+        Assertions.assertEquals(empleadoORM2.getNombre(), Objects.requireNonNull(respuestaUpdateInjection.getBody()).getNombre());
+        Assertions.assertTrue(respuestaUpdateInjection.getStatusCode().is2xxSuccessful());
 
 
         testRestTemplate.delete("/empleados/1");

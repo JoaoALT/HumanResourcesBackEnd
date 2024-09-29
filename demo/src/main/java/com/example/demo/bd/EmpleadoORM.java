@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "Users")
@@ -17,6 +16,7 @@ import java.util.List;
 public class EmpleadoORM {
 
     @Id
+    @Min(0)
     private Integer id;
 
     @NotEmpty

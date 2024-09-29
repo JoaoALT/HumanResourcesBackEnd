@@ -176,7 +176,6 @@ class EmpleadoServiceTest {
     void GivenEmpleadoId_WhenAddingEmpleado_ThenVerifyMaxId(){
         List<EmpleadoORM> empleadosEmulados = new ArrayList<>();
         EmpleadoORM empleadoORMA = new EmpleadoORM();
-        empleadoORMA.setId(1);
         empleadoORMA.setNombre("mario");
         empleadoORMA.setApellido("castaneda");
         empleadoORMA.setEmail("hai@gmail.com");
@@ -185,7 +184,7 @@ class EmpleadoServiceTest {
         empleadoORMA.setFormacionAcademica(new ArrayList<>());
         empleadoORMA.setHistorialLaboral(new ArrayList<>());
 
-        empleadosEmulados.add(empleadoORMA);
+        empleadoService.addEmpleado(empleadoORMA);
 
         when(empleadoJPA.findAll()).thenReturn(empleadosEmulados);
 
@@ -200,7 +199,7 @@ class EmpleadoServiceTest {
 
         empleadoService.addEmpleado(newEmpleado);
 
-        Assertions.assertEquals(2, newEmpleado.getId());
+        Assertions.assertEquals(1, newEmpleado.getId());
         verify(empleadoJPA).save(newEmpleado);
     }
 
@@ -225,6 +224,49 @@ class EmpleadoServiceTest {
         assertEquals("Petruccio", result.getNombre());
         verify(empleadoJPA).findById(1);
         verify(empleadoJPA).save(empleadoExistente);
+    }
+
+    @Test
+    void GivenEmptyList_WhenGetMaxId_ThenReturnZero() {
+        List<EmpleadoORM> emptyList = new ArrayList<>();
+        Integer result = empleadoService.getMaxId(emptyList);
+        assertEquals(0, result);
+    }
+
+    @Test
+    void GivenNonEmptyList_WhenGetMaxId_ThenReturnMaxId() {
+        List<EmpleadoORM> empleados = new ArrayList<>();
+
+        EmpleadoORM empleado1 = new EmpleadoORM();
+        empleado1.setId(1);
+
+        EmpleadoORM empleado2 = new EmpleadoORM();
+        empleado2.setId(2);
+
+        EmpleadoORM empleado3 = new EmpleadoORM();
+        empleado3.setId(3);
+
+        empleados.add(empleado1);
+        empleados.add(empleado2);
+        empleados.add(empleado3);
+
+        Integer result = empleadoService.getMaxId(empleados);
+
+        assertEquals(3, result);
+    }
+
+    @Test
+    void GivenSingleEmployeeInList_WhenGetMaxId_ThenReturnEmployeeId() {
+        List<EmpleadoORM> empleados = new ArrayList<>();
+
+        EmpleadoORM empleado1 = new EmpleadoORM();
+        empleado1.setId(5);
+
+        empleados.add(empleado1);
+
+        Integer result = empleadoService.getMaxId(empleados);
+
+        assertEquals(5, result);
     }
 
 
