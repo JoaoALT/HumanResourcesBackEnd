@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Set Permissions') {
             steps {
-                sh 'chmod +x gradlew'
+                sh "chmod +x ./gradlew"
             }
         }
         stage("Compile") {
