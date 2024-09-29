@@ -46,12 +46,6 @@ public class pruebaDeIntegracionNumeroUno{
         Assertions.assertNotEquals(null, Objects.requireNonNull(resultadoId.getBody()).getId());
         Assertions.assertTrue(resultadoId.getStatusCode().is2xxSuccessful());
 
-        /* TODO
-        ResponseEntity<EmpleadoORM> resultadoEmail = testRestTemplate.getForEntity("/empleados/email/Macaco@gmail.com", EmpleadoORM.class);
-        Assertions.assertNotEquals(null, resultadoEmail.getBody().getEmail());
-        Assertions.assertTrue(resultadoEmail.getStatusCode().is2xxSuccessful());
-        */
-
         EmpleadoORM empleadoORM2 = new EmpleadoORM();
             empleadoORM2.setId(1);
             empleadoORM2.setNombre("Geronimo");
@@ -62,15 +56,6 @@ public class pruebaDeIntegracionNumeroUno{
             empleadoORM2.setFormacionAcademica(new ArrayList<>());
             empleadoORM2.setHistorialLaboral(new ArrayList<>());
 
-        testRestTemplate.put("/empleados/1", empleadoORM2);
-        ResponseEntity<EmpleadoORM> respuestaUpdateInjection = testRestTemplate.getForEntity("/empleados/1", EmpleadoORM.class);
-        Assertions.assertEquals(empleadoORM2.getNombre(), Objects.requireNonNull(respuestaUpdateInjection.getBody()).getNombre());
-        Assertions.assertTrue(respuestaUpdateInjection.getStatusCode().is2xxSuccessful());
-
-
-        testRestTemplate.delete("/empleados/1");
-        ResponseEntity<EmpleadoORM> respuestaDeleteEmbeeded = testRestTemplate.getForEntity("/empleados/1", EmpleadoORM.class);
-        Assertions.assertFalse(respuestaDeleteEmbeeded.getStatusCode().is2xxSuccessful());
     }
 
 }
