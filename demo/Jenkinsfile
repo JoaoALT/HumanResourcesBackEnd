@@ -6,17 +6,17 @@ pipeline {
     stages {
         stage('Set Permissions') {
             steps {
-                sh 'chmod +x gradlew'
+                sh 'chmod +x ./demo/gradlew'
             }
         }
         stage("Compile") {
             steps {
-                sh "demo/gradlew compileJava"
+                sh "./demo/gradlew compileJava"
             }
         }
         stage("Unit test") {
             steps {
-                sh "demo/gradlew test"
+                sh "./demo/gradlew test"
             }
         }
         stage("Code coverage") {
@@ -27,13 +27,13 @@ pipeline {
          			reportFiles: 'index.html',
          			reportName: 'JacocoReport'
          	    ])
-         		sh "demo/gradlew jacocoTestCoverageVerification"
+         		sh "./demo/gradlew jacocoTestCoverageVerification"
          	}
         }
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh 'demo/gradlew sonarqube'
+                    sh './demo/gradlew sonarqube'
                 }
             }
         }
