@@ -5,10 +5,10 @@ pipeline {
     }
     stages {
         stage('Set Permissions') {
-                    steps {
-                        sh 'chmod +x gradlew'
-                    }
-                }
+            steps {
+                sh 'chmod +x gradlew'
+            }
+        }
         stage("Compile") {
             steps {
                 sh "./gradlew compileJava"
