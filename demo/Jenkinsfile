@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('* * * *')  // Poll every 10 minutes
+        pollSCM('* * * * *')  // 
     }
     stages {
         stage('Set Permissions') {
