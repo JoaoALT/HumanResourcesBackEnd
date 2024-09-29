@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      uri :  mongodb+srv://RRHH_JM:e0lCTuuGWSbVWsjY@recursoshumanosdata.krk06.mongodb.net/?retryWrites=true&w=majority&appName=RecursosHumanosDATA
+
+      database: RecursosHumanosData
