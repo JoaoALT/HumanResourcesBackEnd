@@ -19,7 +19,6 @@ public class EmpleadoService {
     private EmpleadoJPA repository;
 
     public boolean addEmpleado(EmpleadoORM empleado){
-
         if (validateEmpleado(empleado)){
             empleado.setId(getMaxId(findAllEmpleados())+1);
             repository.save(empleado);
@@ -57,13 +56,15 @@ public class EmpleadoService {
         return "Empleado "+ empleadoId +" eliminado exitosamente";
     }
 
-    private Integer getMaxId(List<EmpleadoORM> listaEmpleados){
+    public Integer getMaxId(List<EmpleadoORM> listaEmpleados){
         int maxId = 0;
         for (EmpleadoORM empleado : listaEmpleados){
                 if (empleado.getId() > maxId){
                     maxId = empleado.getId();
                 }
-    
+        }
+        if (listaEmpleados.isEmpty()){
+            return 0;
         }
         return maxId;
     }
