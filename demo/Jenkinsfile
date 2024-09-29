@@ -4,6 +4,11 @@ pipeline {
         pollSCM('* * * * *')
     }
     stages {
+        stage('Build') {
+                steps {
+                    sh './gradlew build'
+                }
+            }
         stage("Compile") {
             steps {
                 sh "./gradlew compileJava"
