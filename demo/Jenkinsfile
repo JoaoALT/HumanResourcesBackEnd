@@ -1,39 +1,47 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('* * * * *')
+        pollSCM('* * * *')  // Poll every 10 minutes
     }
     stages {
         stage('Set Permissions') {
             steps {
-                sh 'chmod +x ./demo/gradlew'
+                sh 'chmod +x ./demo/gradlew || true'
             }
         }
         stage("Compile") {
             steps {
-                sh "./demo/gradlew compileJava"
+                dir('demo') {
+                    sh "./gradlew compileJava"
+                }
             }
         }
         stage("Unit test") {
             steps {
-                sh "./demo/gradlew test"
+                dir('demo') {
+                    sh "./gradlew test"
+                }
             }
         }
         stage("Code coverage") {
             steps {
-        	    sh "demo/gradlew jacocoTestReport"
-        	 	publishHTML (target: [
-         	        reportDir: 'build/reports/jacoco/test/html',
-         			reportFiles: 'index.html',
-         			reportName: 'JacocoReport'
-         	    ])
-         		sh "./demo/gradlew jacocoTestCoverageVerification"
-         	}
+                dir('demo') {
+                    sh "./gradlew jacocoTestReport"
+                    publishHTML(target: [
+                        reportDir: 'build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JacocoReport'
+                    ])
+                    sh "./gradlew jacocoTestCoverageVerification"
+                }
+            }
         }
         stage('SonarQube analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh './demo/gradlew sonarqube'
+                dir('demo') {
+                    withSonarQubeEnv('sonarqube') {
+                        sh './gradlew sonarqube'
+                    }
                 }
             }
         }
