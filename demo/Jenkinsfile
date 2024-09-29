@@ -6,34 +6,34 @@ pipeline {
     stages {
         stage('Set Permissions') {
             steps {
-                sh "chmod +x ./gradlew"
+                sh 'chmod +x gradlew'
             }
         }
         stage("Compile") {
             steps {
-                sh "./gradlew compileJava"
+                sh "demo/gradlew compileJava"
             }
         }
         stage("Unit test") {
             steps {
-                sh "./gradlew test"
+                sh "demo/gradlew test"
             }
         }
         stage("Code coverage") {
             steps {
-        	    sh "./gradlew jacocoTestReport"
+        	    sh "demo/gradlew jacocoTestReport"
         	 	publishHTML (target: [
          	        reportDir: 'build/reports/jacoco/test/html',
          			reportFiles: 'index.html',
          			reportName: 'JacocoReport'
          	    ])
-         		sh "./gradlew jacocoTestCoverageVerification"
+         		sh "demo/gradlew jacocoTestCoverageVerification"
          	}
         }
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh './gradlew sonarqube'
+                    sh 'demo/gradlew sonarqube'
                 }
             }
         }
