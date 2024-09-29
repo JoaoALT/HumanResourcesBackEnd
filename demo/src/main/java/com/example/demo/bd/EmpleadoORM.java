@@ -26,7 +26,7 @@ public class EmpleadoORM {
 
     @NotEmpty
     @NotNull(message = "Apellido cannot be null")
-    @Size(min = 2,max = 50)
+    @Size(min = 1,max = 50)
     private String apellido;
 
     @NotEmpty
