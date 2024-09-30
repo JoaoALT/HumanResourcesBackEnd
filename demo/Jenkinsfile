@@ -4,53 +4,20 @@ pipeline {
         pollSCM('* * * * *')  //
     }
     environment {
-            DOCKER_IMAGE = 'mateogc/rrhhjk:latest'
+            DOCKER_IMAGE = "mateogc/rrhhjm:latest"
+            REGISTRY_CREDENTIALS = credentials('2d27f86a-a727-4725-8e8c-27279919cd8a')  // ID actualizado
         }
     stages {
-        stage('Initialize') {
-                steps {
-                    script {
-                        def dockerHome = tool 'Docker'
-                        env.PATH = "${dockerHome}/bin:${env.PATH}"
-                    }
-                }
-            }
         stage('Set Permissions') {
             steps {
                 sh 'chmod +x ./demo/gradlew || true'
             }
         }
+
         stage("Compile") {
             steps {
                 dir('demo') {
                     sh "./gradlew compileJava"
-                }
-            }
-        }
-         stage('Build Docker Image') {
-            steps {
-                script {
-
-                    sh 'docker build -t mateogc/rrhhjk:latest .'
-                }
-            }
-        }
-
-        stage('Trivy Scan'){
-            steps{
-                script{
-                    sh 'docker run --rm -v "/var/jenkins_home/workspace/Ic test:/root/.cache/" aquasec/trivy:latest -q image --severity CRITICAL --light mateogc/rrhhjk:latest'
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'DOCKERHUBPASSWORD', variable: 'DOCKERHUBPASSWORD')]) {
-                        sh "docker login -u joseph888 -p $DOCKERHUBPASSWORD"
-                        sh 'docker push joseph888/banco_backend:latest'
-                    }
                 }
             }
         }
@@ -79,6 +46,22 @@ pipeline {
                 dir('demo') {
                     withSonarQubeEnv('sonarqube') {
                         sh './gradlew sonarqube'
+                    }
+                }
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+        stage('Push Docker image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', '2d27f86a-a727-4725-8e8c-27279919cd8a') {
+                        sh 'docker push $DOCKER_IMAGE'
                     }
                 }
             }
