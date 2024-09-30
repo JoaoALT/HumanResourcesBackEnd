@@ -8,6 +8,28 @@ pipeline {
         REGISTRY_CREDENTIALS = credentials('2d27f86a-a727-4725-8e8c-27279919cd8a')
     }
     stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    def dockerHome = tool 'Docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                }
+            }
+        }
+        
+        stage('Set Permissions') {
+            steps {
+                sh 'chmod +x ./demo/gradlew || true'
+            }
+        }
+        stage("Compile") {
+            steps {
+                dir('demo') {
+                    sh "./gradlew compileJava"
+                }
+            }
+        }
+
         stage('Build Docker image') {
             steps {
                 script {
@@ -24,18 +46,7 @@ pipeline {
                 }
             }
         }
-        stage('Set Permissions') {
-            steps {
-                sh 'chmod +x ./demo/gradlew || true'
-            }
-        }
-        stage("Compile") {
-            steps {
-                dir('demo') {
-                    sh "./gradlew compileJava"
-                }
-            }
-        }
+
         stage("Unit test") {
             steps {
                 dir('demo') {
