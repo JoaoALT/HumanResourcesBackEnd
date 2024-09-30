@@ -67,17 +67,9 @@ pipeline {
                     withCredentials([string(credentialsId: 'dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno', variable: 'dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno')])  {
                         sh "docker login -u mateogc -p dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno"
                         sh 'docker push $DOCKER_IMAGE'
-                    }
-                }
-            }
-        }
-    }
-    post {
-        always {
-            cleanWs()
-        }
-        failure {
-            echo 'Build failed!'
-        }
-    }
+                   }
+               }
+           }
+       }
+   }
 }
