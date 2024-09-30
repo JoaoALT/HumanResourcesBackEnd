@@ -3,7 +3,18 @@ pipeline {
     triggers {
         pollSCM('* * * * *')  //
     }
+    environment {
+            DOCKER_IMAGE = 'mateogc/rrhhjk:latest'
+        }
     stages {
+        stage('Initialize') {
+                steps {
+                    script {
+                        def dockerHome = tool 'Docker'
+                        env.PATH = "${dockerHome}/bin:${env.PATH}"
+                    }
+                }
+            }
         stage('Set Permissions') {
             steps {
                 sh 'chmod +x ./demo/gradlew || true'
@@ -13,6 +24,33 @@ pipeline {
             steps {
                 dir('demo') {
                     sh "./gradlew compileJava"
+                }
+            }
+        }
+         stage('Build Docker Image') {
+            steps {
+                script {
+
+                    sh 'docker build -t mateogc/rrhhjk:latest .'
+                }
+            }
+        }
+
+        stage('Trivy Scan'){
+            steps{
+                script{
+                    sh 'docker run --rm -v "/var/jenkins_home/workspace/Ic test:/root/.cache/" aquasec/trivy:latest -q image --severity CRITICAL --light mateogc/rrhhjk:latest'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'DOCKERHUBPASSWORD', variable: 'DOCKERHUBPASSWORD')]) {
+                        sh "docker login -u joseph888 -p $DOCKERHUBPASSWORD"
+                        sh 'docker push joseph888/banco_backend:latest'
+                    }
                 }
             }
         }
