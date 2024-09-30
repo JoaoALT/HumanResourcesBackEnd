@@ -1,8 +1,11 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('* * * * *')  // 
+        pollSCM('* * * * *')  //
     }
+     environment {
+            DOCKER_IMAGE = "mateogc/rrhhjm:latest"
+        }
     stages {
         stage('Set Permissions') {
             steps {
@@ -44,6 +47,37 @@ pipeline {
                     }
                 }
             }
+        stage('Build Docker image') {
+                    steps {
+                        script {
+                            sh 'docker build -t $DOCKER_IMAGE .'
+                        }
+                    }
+                }
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL $DOCKER_IMAGE'
+                }
+            }
+        }
+        stage('Push Docker image to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno', variable: 'dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno')])  {
+                        sh "docker login -u mateogc -p dckr_pat_1lWe2AGtPlU0Q80r0TN-r2Lfyno"
+                        sh 'docker push $DOCKER_IMAGE'
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
