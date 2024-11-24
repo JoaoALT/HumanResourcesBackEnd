@@ -48,7 +48,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                docker.build("mateogc/rrhhjm:latest")
+                script {
+                    docker.build("mateogc/rrhhjm:latest")
+                }
             }
         }
 
