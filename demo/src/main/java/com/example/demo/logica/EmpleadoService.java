@@ -51,6 +51,7 @@ public class EmpleadoService {
         return repository.save(empleadoActual);
     }
 
+    
     public String deleteEmpleado(Integer empleadoId){
         repository.deleteById(empleadoId);
         return "Empleado "+ empleadoId +" eliminado exitosamente";
