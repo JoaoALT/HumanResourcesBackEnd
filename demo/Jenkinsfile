@@ -49,7 +49,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("mateogc/rrhhjm:latest")
+                    sh 'docker build -t mateogc/rrhhjm:latest .'
                 }
             }
         }
