@@ -47,16 +47,13 @@ pipeline {
         }
 
         stage('Docker Build') {
-            agent{
-                docker{
-                    steps {
-                        script {
-                            docker.build("mateogc/rrhhjm:latest")
-                        }
-                    }
+            steps {
+                script {
+                    docker.build("mateogc/rrhhjm:latest")
                 }
             }
         }
+
 
     }
 }
