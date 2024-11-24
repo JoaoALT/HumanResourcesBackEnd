@@ -251,7 +251,6 @@ class EmpleadoServiceTest {
         empleados.add(empleado3);
 
         Integer result = empleadoService.getMaxId(empleados);
-
         assertEquals(3, result);
     }
 

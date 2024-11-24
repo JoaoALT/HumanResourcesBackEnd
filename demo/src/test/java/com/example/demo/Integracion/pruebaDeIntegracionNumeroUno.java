@@ -55,7 +55,6 @@ public class pruebaDeIntegracionNumeroUno{
             empleadoORM2.setHabilidades(new ArrayList<>());
             empleadoORM2.setFormacionAcademica(new ArrayList<>());
             empleadoORM2.setHistorialLaboral(new ArrayList<>());
-
     }
 
 }
