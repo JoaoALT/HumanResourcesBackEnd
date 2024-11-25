@@ -61,7 +61,24 @@ pipeline {
                 }
             }
         }
+        stage('Trivy Scan'){
+            steps{
+                script{
+                    sh 'docker run --rm -v "/var/jenkins_home/workspace/CI Backend:/root/.cache/" aquasec/trivy:latest -q image --severity CRITICAL --light mateogc/rrhhjm:latest'
+                }
+            }
+        }
 
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withCredentials() {
+                        sh "docker login -u mateogc -p 2d27f86a-a727-4725-8e8c-27279919cd8a"
+                        sh 'docker push mateogc/rrhhjm:latest'
+                    }
+                }
+            }
+        }
 
     }
 }
