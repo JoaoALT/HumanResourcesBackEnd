@@ -2,6 +2,7 @@ package com.example.demo.logica;
 
 import com.example.demo.bd.EmpleadoORM;
 import com.example.demo.bd.EmpleadoJPA;
+import com.example.demo.producer.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,10 @@ public class EmpleadoService {
         empleadoActual.setHabilidades(empleadoRequest.getHabilidades());
         empleadoActual.setFormacionAcademica(empleadoRequest.getFormacionAcademica());
         empleadoActual.setHistorialLaboral(empleadoRequest.getHistorialLaboral());
+
+        Producer.sendMessage(empleadoRequest.getId().toString() + empleadoRequest.getNombre() + empleadoRequest.getApellido() + empleadoRequest.getEmail() + empleadoRequest.getTelefono() + empleadoRequest.getHabilidades() + empleadoRequest.getFormacionAcademica() + empleadoRequest.getHistorialLaboral()
+        );
+
         return repository.save(empleadoActual);
     }
 
