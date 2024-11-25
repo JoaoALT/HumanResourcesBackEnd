@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Slf4j
 @Service
@@ -60,6 +63,7 @@ public class EmpleadoService {
 
         return repository.save(empleadoActual);
     }
+
 
     public String deleteEmpleado(Integer empleadoId){
         repository.deleteById(empleadoId);
@@ -132,5 +136,36 @@ public class EmpleadoService {
                 "Empleado anterior: "+empleadoActual.getId().toString() +" "+ empleadoActual.getNombre() +" "+ empleadoActual.getApellido() +" "+ empleadoActual.getEmail() +" "+ empleadoActual.getTelefono() +" "+ empleadoActual.getHabilidades() +" "+ empleadoActual.getFormacionAcademica() +" "+ empleadoActual.getHistorialLaboral()
         +" "
         );
+        invokeLambdaApi("evento");
     }
+    private void invokeLambdaApi(String evento) {
+        try {
+            URL url = new URL("https://gi6tx90uk0.execute-api.us-east-2.amazonaws.com/default/Welcome");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            // Crear un mensaje simple para enviar solo el evento
+            String jsonInputString = String.format("{\"evento\": \"%s\"}", evento);
+
+            // Enviar el mensaje
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            // Leer la respuesta
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                System.out.println("Respuesta de Lambda API: " + responseCode);
+            } else {
+                System.err.println("Error en la respuesta de Lambda API: " + responseCode);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error al invocar la API de Lambda: " + e.getMessage());
+        }
+    }
+
 }

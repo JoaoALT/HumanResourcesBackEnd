@@ -1,9 +1,17 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('* * * * *')  // 
+        pollSCM('* * * * *')  //
     }
     stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    def dockerHome = tool 'Docker'
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                }
+            }
+        }
         stage('Set Permissions') {
             steps {
                 sh 'chmod +x ./demo/gradlew || true'
@@ -45,5 +53,30 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    sh 'docker build -t mateogc/rrhhjm:latest ./demo'
+                }
+            }
+        }
+        stage('Trivy Scan'){
+            steps{
+                script{
+                    sh 'docker run --rm -v "/var/jenkins_home/workspace/CI Backend:/root/.cache/" aquasec/trivy:latest -q image --severity CRITICAL --light mateogc/rrhhjm:latest'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh "docker login -u mateogc -p dckr_pat_rGvUXWce73x2MlaSrHY30rwtFcc"
+                    sh 'docker push mateogc/rrhhjm:latest'
+                }
+            }
+        }
+
     }
 }
