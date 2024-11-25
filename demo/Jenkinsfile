@@ -72,7 +72,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker login -u mateogc -p Jaguarcito2"
+                    sh "docker login -u mateogc -p dckr_pat_rGvUXWce73x2MlaSrHY30rwtFcc"
                     sh 'docker push mateogc/rrhhjm:latest'
                 }
             }
