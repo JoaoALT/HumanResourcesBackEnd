@@ -2,14 +2,19 @@ package com.example.demo.logica;
 
 import com.example.demo.bd.EmpleadoORM;
 import com.example.demo.bd.EmpleadoJPA;
+import com.example.demo.producer.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.*;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
@@ -39,8 +44,12 @@ public class EmpleadoService {
         return repository.findByEmail(EmpleadoEmail);
     }
 
-    public EmpleadoORM updateEmpleado(EmpleadoORM empleadoRequest){
+    public EmpleadoORM updateEmpleado(EmpleadoORM empleadoRequest) throws IOException, TimeoutException {
+
         EmpleadoORM empleadoActual = repository.findById(empleadoRequest.getId()).get();
+
+        alertaRabbitmq(empleadoActual, empleadoRequest);
+
         empleadoActual.setNombre(empleadoRequest.getNombre());
         empleadoActual.setApellido(empleadoRequest.getApellido());
         empleadoActual.setEmail(empleadoRequest.getEmail());
@@ -48,6 +57,7 @@ public class EmpleadoService {
         empleadoActual.setHabilidades(empleadoRequest.getHabilidades());
         empleadoActual.setFormacionAcademica(empleadoRequest.getFormacionAcademica());
         empleadoActual.setHistorialLaboral(empleadoRequest.getHistorialLaboral());
+
         return repository.save(empleadoActual);
     }
 
@@ -82,4 +92,45 @@ public class EmpleadoService {
         return violations.isEmpty();
     }
 
+
+    private void alertaRabbitmq(EmpleadoORM empleadoActual, EmpleadoORM empleadoRequest) throws IOException, TimeoutException {
+
+        ArrayList<String> espaciosActualizados = new ArrayList<>();
+
+        if(!Objects.equals(empleadoActual.getNombre(), empleadoRequest.getNombre())){
+            espaciosActualizados.add(empleadoRequest.getNombre());
+        }
+
+        if(!empleadoActual.getApellido().equals(empleadoRequest.getApellido())){
+            espaciosActualizados.add(empleadoRequest.getApellido());
+        }
+
+        if(!Objects.equals(empleadoActual.getEmail(), empleadoRequest.getEmail())){
+            espaciosActualizados.add(empleadoRequest.getEmail());
+        }
+
+        if(!Objects.equals(empleadoActual.getTelefono(), empleadoRequest.getTelefono())){
+            espaciosActualizados.add(empleadoRequest.getTelefono());
+        }
+
+        if(!Objects.equals(empleadoActual.getHabilidades(), empleadoRequest.getHabilidades())){
+            espaciosActualizados.add(empleadoRequest.getHabilidades().toString());
+        }
+
+        if(!Objects.equals(empleadoActual.getFormacionAcademica(), empleadoRequest.getFormacionAcademica())){
+            espaciosActualizados.add(empleadoRequest.getFormacionAcademica().toString());
+        }
+
+        if(!Objects.equals(empleadoActual.getHistorialLaboral(), empleadoRequest.getHistorialLaboral())){
+            espaciosActualizados.add(empleadoRequest.getHistorialLaboral().toString());
+        }
+
+
+        Producer.sendMessage(
+                "Empleado actualizado"+espaciosActualizados+
+
+                "Empleado anterior: "+empleadoActual.getId().toString() +" "+ empleadoActual.getNombre() +" "+ empleadoActual.getApellido() +" "+ empleadoActual.getEmail() +" "+ empleadoActual.getTelefono() +" "+ empleadoActual.getHabilidades() +" "+ empleadoActual.getFormacionAcademica() +" "+ empleadoActual.getHistorialLaboral()
+        +" "
+        );
+    }
 }
