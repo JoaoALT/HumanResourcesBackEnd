@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/empleados")
@@ -44,7 +46,7 @@ public class EmpleadoController {
 
     @CrossOrigin
     @PutMapping("/{empleadoId}")
-    public EmpleadoORM updateEmpleado(@RequestBody EmpleadoORM empleado){
+    public EmpleadoORM updateEmpleado(@RequestBody EmpleadoORM empleado) throws IOException, TimeoutException {
         return service.updateEmpleado(empleado);
     }
 

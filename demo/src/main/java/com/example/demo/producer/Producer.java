@@ -11,26 +11,20 @@ public class Producer {
     static final String EXCHANGE_NAME = "DemoExchange";
     static final String QUEUE_NAME = "employee.profile.update.events";
 
-    public static void sendMessage(String message) {
+    public static void sendMessage(String message) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("45.55.216.20");
         factory.setPort(5672);
 
-        try (Connection connection = factory.newConnection();
-             Channel channel = connection.createChannel()) {
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
 
-            // Declare exchange and queue
-            channel.exchangeDeclare(EXCHANGE_NAME, "direct", true);
-            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-            channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, "");
+        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
-            // Publish the message
-            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
-            System.out.println("Message sent to RabbitMQ: " + message);
+        channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
 
-        } catch (IOException | TimeoutException e) {
-            System.err.println("Failed to send message: " + e.getMessage());
-            e.printStackTrace();
-        }
+        channel.close();
+        connection.close();
+
     }
 }
