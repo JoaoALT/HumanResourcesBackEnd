@@ -18,10 +18,12 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -207,7 +209,7 @@ class EmpleadoServiceTest {
 
 
     @Test
-    void Given_ModifiedEmpleado_When_UpdatingEmpleado_Then_ReturnUpdatedEmpleado(){
+    void Given_ModifiedEmpleado_When_UpdatingEmpleado_Then_ReturnUpdatedEmpleado() throws IOException, TimeoutException {
         EmpleadoORM empleadoExistente = new EmpleadoORM();
         empleadoExistente.setId(1);
         empleadoExistente.setNombre("Pablo");
