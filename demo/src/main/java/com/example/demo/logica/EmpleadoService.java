@@ -100,9 +100,10 @@ public class EmpleadoService {
             espaciosActualizados.add(empleadoRequest.getNombre());
         }
 
-        if(!empleadoActual.getApellido().equals(empleadoRequest.getApellido())){
+        if(!Objects.equals(empleadoActual.getApellido(), empleadoRequest.getApellido())){
             espaciosActualizados.add(empleadoRequest.getApellido());
         }
+
 
         if(!Objects.equals(empleadoActual.getEmail(), empleadoRequest.getEmail())){
             espaciosActualizados.add(empleadoRequest.getEmail());

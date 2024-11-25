@@ -1,5 +1,8 @@
 package com.example.demo.Logica;
 
+import java.util.Optional;
+import java.util.NoSuchElementException;
+
 import com.example.demo.bd.EmpleadoJPA;
 import com.example.demo.bd.EmpleadoORM;
 import com.example.demo.logica.EmpleadoService;
@@ -13,17 +16,17 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +34,9 @@ class EmpleadoServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(EmpleadoServiceTest.class);
     private Validator validator;
+
+    @Mock
+    private JpaRepository<EmpleadoORM, Integer> repository;
 
     @Mock
     EmpleadoJPA empleadoJPA;
@@ -113,7 +119,7 @@ class EmpleadoServiceTest {
 
         when(empleadoJPA.save(any(EmpleadoORM.class))).thenThrow(new RuntimeException("Database save failed"));
 
-        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             empleadoService.addEmpleado(empleadoORM);
         });
         Assertions.assertEquals("Database save failed", exception.getMessage());
@@ -203,18 +209,27 @@ class EmpleadoServiceTest {
         verify(empleadoJPA).save(newEmpleado);
     }
 
-
-
-
     @Test
-    void Given_ModifiedEmpleado_When_UpdatingEmpleado_Then_ReturnUpdatedEmpleado(){
+    void Given_ModifiedEmpleado_When_UpdatingEmpleado_Then_ReturnUpdatedEmpleado() throws IOException, TimeoutException {
         EmpleadoORM empleadoExistente = new EmpleadoORM();
         empleadoExistente.setId(1);
         empleadoExistente.setNombre("Pablo");
+        empleadoExistente.setApellido("Perez");
+        empleadoExistente.setEmail("pablo@example.com");
+        empleadoExistente.setTelefono("123456789");
+        empleadoExistente.setHabilidades(Collections.singletonList("Java"));
+        empleadoExistente.setFormacionAcademica(Collections.singletonList("Engineering"));
+        empleadoExistente.setHistorialLaboral(Collections.singletonList("5 years"));
 
         EmpleadoORM updatedEmpleado = new EmpleadoORM();
         updatedEmpleado.setId(1);
         updatedEmpleado.setNombre("Petruccio");
+        updatedEmpleado.setApellido("Perez");
+        updatedEmpleado.setEmail("petruccio@example.com");
+        updatedEmpleado.setTelefono("987654321");
+        updatedEmpleado.setHabilidades(Collections.singletonList("Java, Spring"));
+        updatedEmpleado.setFormacionAcademica(Collections.singletonList("Engineering, Masters"));
+        updatedEmpleado.setHistorialLaboral(Collections.singletonList("6 years"));
 
         when(empleadoJPA.findById(1)).thenReturn(Optional.of(empleadoExistente));
         when(empleadoJPA.save(empleadoExistente)).thenReturn(updatedEmpleado);
@@ -225,6 +240,8 @@ class EmpleadoServiceTest {
         verify(empleadoJPA).findById(1);
         verify(empleadoJPA).save(empleadoExistente);
     }
+
+
 
     @Test
     void GivenEmptyList_WhenGetMaxId_ThenReturnZero() {
